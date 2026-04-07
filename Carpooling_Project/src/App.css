@@ -1,0 +1,54 @@
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  margin-bottom: 16px;
+}
+
+.searchRow {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.searchRow input {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  min-width: 170px;
+}
+
+.searchRow button,
+.rideCard button {
+  padding: 8px 12px;
+  border: 1px solid #1f4aa1;
+  border-radius: 6px;
+  background: #1f4aa1;
+  color: #fff;
+  cursor: pointer;
+}
+
+.rideList {
+  display: grid;
+  gap: 12px;
+}
+
+.rideCard {
+  border: 1px solid #d7d7d7;
+  border-radius: 8px;
+  padding: 12px;
+  background: #fff;
+}
+
+.rideCard h3 {
+  margin: 0 0 6px;
+}
+
+.rideCard p {
+  margin: 4px 0;
+  color: #333;
+}
