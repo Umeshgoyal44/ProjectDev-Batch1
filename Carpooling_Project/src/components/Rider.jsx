@@ -1,117 +1,241 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Clock3, Leaf, LocateFixed, MapPinned, ShieldCheck, WalletCards } from 'lucide-react';
+import {
+  ArrowLeft,
+  Bell,
+  Check,
+  CircleDot,
+  Leaf,
+  Lock,
+  MapPinned,
+  MessageSquareText,
+  ShieldCheck,
+  Star,
+  BriefcaseBusiness,
+  UserRound,
+  VolumeX,
+} from 'lucide-react';
 
-const riderBenefits = [
-  {
-    title: 'Search rides by corridor',
-    description: 'Compare multiple matching trips around your pickup zone and office timing.',
-    icon: MapPinned,
-  },
-  {
-    title: 'Save on every commute',
-    description: 'See transparent pricing before booking and keep your monthly travel spend predictable.',
-    icon: WalletCards,
-  },
-  {
-    title: 'Travel with verified people',
-    description: 'Review ratings, trusted profiles, and ride preferences before confirming your seat.',
-    icon: ShieldCheck,
-  },
+const sidebarItems = [
+  { label: 'Find a Ride', to: '/rider', active: true },
+  { label: 'Offer a Ride', to: '/driver', active: false },
+  { label: 'My Trips', to: '/', active: false },
+  { label: 'Messages', to: '/', active: false },
 ];
 
-const riderMetrics = [
-  { label: 'Pickup accuracy', value: '2 min avg' },
-  { label: 'Monthly savings', value: 'INR 3,200' },
-  { label: 'CO2 reduced', value: '18 kg' },
+const tripFacts = [
+  { label: 'Route', value: 'Express lane', icon: MapPinned },
+  { label: 'Luggage', value: 'Small bag', icon: BriefcaseBusiness },
+  { label: 'Rules', value: 'No smoking', icon: VolumeX },
 ];
 
 function Rider() {
   return (
-    <div className="min-h-screen bg-[#f4efe6] text-slate-900">
-      <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8">
-        <header className="mb-8 rounded-[2rem] border border-amber-900/10 bg-white/80 p-6 shadow-lg shadow-amber-950/5 backdrop-blur">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="mb-2 text-sm uppercase tracking-[0.35em] text-amber-700">Rider space</p>
-              <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Find dependable seats for the trips you make every day.</h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
-                This page gives riders a clear landing experience with booking-focused information and quick navigation.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                to="/"
-                className="rounded-full border border-slate-300 px-5 py-2 text-sm font-medium text-slate-800 transition hover:border-amber-500 hover:text-amber-700"
-              >
-                Back to home
-              </Link>
-              <Link
-                to="/driver"
-                className="rounded-full bg-slate-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
-              >
-                View driver page
-              </Link>
-            </div>
-          </div>
-        </header>
+    <div className="min-h-screen bg-[#eef3fb] px-3 py-4 text-slate-900 sm:px-5 lg:px-6">
+      <div className="mx-auto max-w-[1400px]">
+        <div className="overflow-hidden rounded-[34px] border border-white/70 bg-white/65 shadow-[0_25px_80px_rgba(27,56,104,0.14)] backdrop-blur">
+          <div className="flex min-h-screen flex-col lg:flex-row">
+            <aside className="w-full border-b border-slate-200/70 bg-white/92 px-4 py-5 lg:min-h-screen lg:w-[255px] lg:border-b-0 lg:border-r">
+              <div className="flex items-center gap-3">
+                <Link
+                  to="/"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:border-blue-300 hover:text-blue-700"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Link>
+                <div>
+                  <p className="text-lg font-semibold italic text-slate-900">CommuteFlow</p>
+                  <p className="text-xs text-slate-400">Rider dashboard</p>
+                </div>
+              </div>
 
-        <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-          <aside className="rounded-[2rem] bg-[#17342b] p-8 text-white shadow-2xl shadow-emerald-950/20">
-            <div className="flex items-center gap-3 text-sm uppercase tracking-[0.3em] text-emerald-200">
-              <LocateFixed className="h-5 w-5" />
-              Commute snapshot
-            </div>
-            <h2 className="mt-6 text-3xl font-semibold leading-tight">Book the right ride without chasing last-minute availability.</h2>
-            <div className="mt-8 space-y-4">
-              <div className="rounded-3xl bg-white/10 p-4">
-                <p className="text-sm text-emerald-100/80">Morning route</p>
-                <p className="mt-2 text-lg font-medium">Indirapuram to Noida Sector 18</p>
+              <div className="mt-8 rounded-[24px] bg-slate-950 px-4 py-4 text-white shadow-lg shadow-slate-900/15">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 to-emerald-400 font-semibold text-slate-950">
+                    R
+                  </div>
+                  <div>
+                    <p className="text-sm text-white/70">Welcome back</p>
+                    <p className="font-semibold">Rider Krishna</p>
+                  </div>
+                </div>
               </div>
-              <div className="rounded-3xl bg-white/10 p-4">
-                <p className="flex items-center gap-2 text-sm text-emerald-100/80">
-                  <Clock3 className="h-4 w-4" />
-                  Best pickup window
-                </p>
-                <p className="mt-2 text-lg font-medium">08:05 AM to 08:20 AM</p>
-              </div>
-              <div className="rounded-3xl bg-white/10 p-4">
-                <p className="flex items-center gap-2 text-sm text-emerald-100/80">
-                  <Leaf className="h-4 w-4" />
-                  Sustainable choice
-                </p>
-                <p className="mt-2 text-lg font-medium">Share one car instead of four solo rides</p>
-              </div>
-            </div>
-          </aside>
 
-          <div className="rounded-[2rem] border border-amber-900/10 bg-white/80 p-8">
-            <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Why riders need this page</p>
-            <div className="mt-6 grid gap-4 sm:grid-cols-3">
-              {riderMetrics.map((metric) => (
-                <article key={metric.label} className="rounded-3xl bg-[#f7f1e7] p-4">
-                  <p className="text-sm text-slate-500">{metric.label}</p>
-                  <p className="mt-2 text-2xl font-semibold text-slate-900">{metric.value}</p>
-                </article>
-              ))}
-            </div>
-            <div className="mt-6 grid gap-4">
-              {riderBenefits.map(({ title, description, icon: Icon }) => (
-                <article key={title} className="rounded-3xl border border-slate-200 bg-white p-5">
-                  <div className="flex items-start gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
-                      <Icon className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
-                      <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
+              <nav className="mt-6 space-y-2">
+                {sidebarItems.map((item) => (
+                  <Link
+                    key={item.label}
+                    to={item.to}
+                    className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition ${
+                      item.active
+                        ? 'bg-emerald-50 text-emerald-700 shadow-sm ring-1 ring-emerald-100'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    <span
+                      className={`flex h-8 w-8 items-center justify-center rounded-xl ${
+                        item.active ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-500'
+                      }`}
+                    >
+                      {item.label === 'Find a Ride' ? <MapPinned className="h-4 w-4" /> : <CircleDot className="h-4 w-4" />}
+                    </span>
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+
+              <div className="mt-8 rounded-[22px] bg-gradient-to-r from-emerald-400 to-cyan-500 p-[1px]">
+                <div className="rounded-[21px] bg-white px-4 py-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-600">Eco impact</p>
+                  <p className="mt-2 text-sm text-slate-600">12kg saved this week</p>
+                  <div className="mt-4 h-2 rounded-full bg-slate-100">
+                    <div className="h-2 w-3/4 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-500" />
+                  </div>
+                </div>
+              </div>
+            </aside>
+
+            <div className="flex-1 px-4 py-5 sm:px-6 lg:px-7">
+              <header className="flex flex-col gap-4 border-b border-slate-200/80 pb-5 md:flex-row md:items-center md:justify-between">
+                <div className="flex flex-wrap items-center gap-6 text-sm">
+                  <Link to="/rider" className="font-semibold text-blue-700 underline decoration-blue-200 underline-offset-[10px]">Find a Ride</Link>
+                  <Link to="/driver" className="font-medium text-slate-400 transition hover:text-slate-700">Offer a Ride</Link>
+                  <Link to="/" className="font-medium text-slate-400 transition hover:text-slate-700">My Trips</Link>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-500 shadow-sm ring-1 ring-slate-200">
+                    <Bell className="h-4 w-4" />
+                  </button>
+                  <div className="flex items-center gap-2 rounded-full bg-white px-2 py-1 shadow-sm ring-1 ring-slate-200">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 text-sm font-semibold text-slate-950">
+                      K
                     </div>
                   </div>
-                </article>
-              ))}
+                </div>
+              </header>
+
+              <div className="mt-6 grid gap-6 xl:grid-cols-[1.18fr_0.82fr]">
+                <section className="space-y-5">
+                  <div className="rounded-[30px] bg-white p-4 shadow-[0_15px_40px_rgba(30,64,175,0.08)] ring-1 ring-slate-100">
+                    <div className="relative overflow-hidden rounded-[26px] bg-gradient-to-br from-slate-100 via-slate-50 to-cyan-50 p-6">
+                      <div className="absolute inset-0 opacity-50">
+                        <div className="h-full w-full bg-[linear-gradient(90deg,rgba(148,163,184,0.15)_1px,transparent_1px),linear-gradient(rgba(148,163,184,0.15)_1px,transparent_1px)] bg-[size:42px_42px]" />
+                      </div>
+                      <div className="relative h-[240px] rounded-[22px] border border-white/70 bg-white/40">
+                        <svg viewBox="0 0 520 280" className="h-full w-full">
+                          <path d="M42 218C96 199 111 142 159 136C213 128 236 39 289 44C338 49 353 144 415 154C448 159 473 128 492 99" fill="none" stroke="#1b72c9" strokeWidth="10" strokeLinecap="round" />
+                          <path d="M57 233C120 192 152 181 193 171C246 157 268 71 325 76C388 82 402 143 466 164" fill="none" stroke="#18a0aa" strokeWidth="8" strokeLinecap="round" strokeDasharray="12 12" />
+                          <path d="M166 126L210 80L279 87L329 45L395 124" fill="none" stroke="#62c56f" strokeWidth="7" strokeLinecap="round" />
+                        </svg>
+                        <div className="absolute bottom-4 left-4 inline-flex items-center gap-2 rounded-full bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-emerald-600/30">
+                          <Leaf className="h-4 w-4" />
+                          Eco-impact: 4.2kg CO2 saved
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+                      <div>
+                        <p className="text-3xl font-semibold text-slate-900">Commute to Palo Alto</p>
+                        <p className="mt-2 text-sm text-slate-500">8:05 AM • 45 min duration</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-4xl font-semibold text-blue-700">$12.50</p>
+                        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Per seat</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                      {tripFacts.map(({ label, value, icon: Icon }) => (
+                        <div key={label} className="rounded-[22px] bg-slate-50 px-4 py-4 ring-1 ring-slate-100">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-blue-700 shadow-sm ring-1 ring-slate-100">
+                            <Icon className="h-4 w-4" />
+                          </div>
+                          <p className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">{label}</p>
+                          <p className="mt-1 font-medium text-slate-800">{value}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+
+                <aside className="space-y-5">
+                  <div className="rounded-[28px] bg-white p-5 shadow-[0_15px_40px_rgba(30,64,175,0.08)] ring-1 ring-slate-100">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-16 w-16 items-center justify-center rounded-[22px] bg-gradient-to-br from-orange-400 to-cyan-500 text-xl font-semibold text-white">
+                          M
+                        </div>
+                        <div>
+                          <h2 className="text-xl font-semibold text-slate-900">Marcus T.</h2>
+                          <p className="text-sm text-slate-500">Senior Software Engineer</p>
+                          <p className="mt-2 flex items-center gap-2 text-sm text-slate-500">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-emerald-700">
+                              <Check className="h-3.5 w-3.5" />
+                              90%
+                            </span>
+                            <span className="inline-flex items-center gap-1">
+                              <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                              4.9 (142 rides)
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">
+                        <ShieldCheck className="h-3.5 w-3.5" />
+                        Verified
+                      </span>
+                    </div>
+
+                    <div className="mt-5 rounded-[22px] bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600">
+                      <div className="flex items-start gap-3">
+                        <Lock className="mt-0.5 h-4 w-4 text-slate-400" />
+                        <p>Privacy guaranteed. Detailed profile and contact info are partially hidden until Marcus confirms your request.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-[28px] bg-white p-5 shadow-[0_15px_40px_rgba(30,64,175,0.08)] ring-1 ring-slate-100">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="rounded-[22px] bg-slate-50 px-4 py-4">
+                        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Vehicle</p>
+                        <p className="mt-2 font-medium text-slate-800">Tesla Model 3 • White</p>
+                      </div>
+                      <div className="rounded-[22px] bg-slate-50 px-4 py-4">
+                        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Plates</p>
+                        <p className="mt-2 font-medium text-slate-800">428</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-[28px] bg-[#e9eff8] p-5 shadow-[0_15px_40px_rgba(30,64,175,0.08)] ring-1 ring-white/70">
+                    <h3 className="text-lg font-semibold text-slate-900">Request to Join Pool</h3>
+                    <p className="mt-1 text-sm text-slate-500">Send a message to Marcus before you confirm your seat.</p>
+
+                    <div className="mt-4 rounded-[20px] bg-white p-4 shadow-sm ring-1 ring-slate-100">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Message</p>
+                      <p className="mt-3 text-sm leading-6 text-slate-500">
+                        Hi Marcus! I&apos;m heading to the same office park. I&apos;ll be at the pickup point 5 minutes early.
+                      </p>
+                    </div>
+
+                    <label className="mt-4 flex items-start gap-3 text-sm text-slate-500">
+                      <input type="checkbox" defaultChecked className="mt-1 h-4 w-4 rounded border-slate-300 text-blue-700 focus:ring-blue-600" />
+                      I agree to the carpool community guidelines before sending this request.
+                    </label>
+
+                    <button className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-700 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-700/25 transition hover:bg-blue-800">
+                      <MessageSquareText className="h-4 w-4" />
+                      Send Join Request
+                    </button>
+
+                    <p className="mt-3 text-center text-xs text-slate-500">Marcus usually responds within 15 minutes.</p>
+                  </div>
+                </aside>
+              </div>
             </div>
           </div>
-        </section>
+        </div>
       </div>
     </div>
   );
