@@ -10,7 +10,7 @@ ProjectDev-Batch1/
 │   └── models/
 │       ├── Ride.js
 │       └── User.js
-├── Carpooling_Project/
+├── frontend/
 │   ├── package.json
 │   ├── vite.config.js
 │   ├── index.html
@@ -45,7 +45,7 @@ npm run dev
 ### 2. Start Frontend
 
 ```bash
-cd Carpooling_Project
+cd frontend
 npm i
 npm run dev
 ```

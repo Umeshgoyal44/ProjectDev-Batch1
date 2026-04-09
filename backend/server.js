@@ -156,15 +156,18 @@ async function startServer() {
     throw new Error('Missing MongoDB connection string. Set MONGO_URI in backend/.env.');
   }
 
-  await mongoose.connect(mongoUri);
+  await mongoose.connect(mongoUri, {
+    serverSelectionTimeoutMS: 10000,
+  });
 
   app.listen(port, () => {
     console.log(`Server started on port ${port}`);
-    console.log('MongoDB connected');
+    console.log(`MongoDB connected to ${mongoose.connection.name}`);
   });
 }
 
 startServer().catch((error) => {
   console.error('Failed to start server:', error.message);
+  console.error('Atlas checklist: verify the URI, the database user/password, your current IP in Network Access, and the database name in the connection string.');
   process.exit(1);
 });
