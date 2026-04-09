@@ -56,12 +56,98 @@ app.post('/addRide', async (req, res) => {
   }
 });
 
+const RideRequest = require('./models/RideRequest');
+
 app.get('/rides', async (req, res) => {
   try {
     const rides = await Ride.find().sort({ createdAt: -1 });
     res.json(rides);
   } catch (error) {
     res.status(500).json({ message: 'Could not fetch rides' });
+  }
+});
+
+app.get('/rides/search', async (req, res) => {
+  try {
+    const { from, to, time } = req.query;
+    let query = {};
+    if (from) query.from = { $regex: from, $options: 'i' };
+    if (to) query.to = { $regex: to, $options: 'i' };
+    if (time) query.time = { $regex: time, $options: 'i' };
+    query.seats = { $gt: 0 };
+    const rides = await Ride.find(query).sort({ createdAt: -1 });
+    res.json(rides);
+  } catch (error) {
+    res.status(500).json({ message: 'Could not search rides' });
+  }
+});
+
+app.post('/rides/request', async (req, res) => {
+  try {
+    const { rideId, riderId } = req.body;
+    const existing = await RideRequest.findOne({ rideId, riderId });
+    if (existing) return res.status(400).json({ message: 'Already requested' });
+    const newReq = await RideRequest.create({ rideId, riderId });
+    res.status(201).json(newReq);
+  } catch (error) {
+    res.status(500).json({ message: 'Could not send request' });
+  }
+});
+
+app.get('/api/driver/requests', async (req, res) => {
+  try {
+    const { driverName } = req.query;
+    let rides;
+    if (driverName) {
+      rides = await Ride.find({ driverName });
+    } else {
+      rides = await Ride.find();
+    }
+    const rideIds = rides.map(r => r._id);
+    const requests = await RideRequest.find({ rideId: { $in: rideIds } })
+      .populate('rideId')
+      .populate('riderId');
+    res.json(requests);
+  } catch (error) {
+    res.status(500).json({ message: 'Could not fetch driver requests' });
+  }
+});
+
+app.get('/api/rider/requests', async (req, res) => {
+  try {
+    const { riderId } = req.query;
+    const requests = await RideRequest.find({ riderId }).populate('rideId');
+    res.json(requests);
+  } catch (error) {
+    res.status(500).json({ message: 'Could not fetch rider requests' });
+  }
+});
+
+app.post('/rides/request/:id/:status', async (req, res) => {
+  try {
+    const { id, status } = req.params;
+    if (!['accepted', 'rejected'].includes(status)) return res.status(400).json({ message: 'Invalid status' });
+    
+    const rideReq = await RideRequest.findById(id).populate('rideId');
+    if (!rideReq) return res.status(404).json({ message: 'Request not found' });
+    
+    // Only reduce seats if status changes to accepted from pending
+    if (status === 'accepted' && rideReq.status !== 'accepted') {
+      const ride = await Ride.findById(rideReq.rideId._id);
+      if (ride.seats > 0) {
+        ride.seats -= 1;
+        await ride.save();
+      } else {
+        return res.status(400).json({ message: 'No seats available' });
+      }
+    }
+    
+    rideReq.status = status;
+    await rideReq.save();
+    
+    res.json({ message: `Request ${status}`, request: rideReq });
+  } catch (error) {
+    res.status(500).json({ message: 'Could not update request status' });
   }
 });
 
