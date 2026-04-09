@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import '../App.css'
 import { Link } from 'react-router-dom'
+import '../App.css'
 
 function Home() {
   const [pickup, setPickup] = useState('')
@@ -35,31 +35,32 @@ function Home() {
     ...ride,
     rating: (4.5 + Math.random() * 0.5).toFixed(1),
     reviews: Math.floor(50 + Math.random() * 200),
-    distance: Math.floor(1 + Math.random() * 15) + ' min away',
+    distance: `${Math.floor(1 + Math.random() * 15)} min away`,
     carDetails: 'Demo Vehicle • Color',
   }))
 
   return (
     <div className="app-container">
-      {/* Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-brand">
           <h2>CommuteFlow</h2>
         </div>
 
         <div className="sidebar-tabs">
-          <button className="tab active">Find a Ride</button>
-          <button className="tab">Offer a Ride</button>
+          <Link to="/rider" className="tab active">Find a Ride</Link>
+          <Link to="/driver" className="tab">Offer a Ride</Link>
         </div>
 
         <nav className="sidebar-menu">
-          <a href="#" className="menu-item active">🚗 Find a Ride</a>
-          <a href="#" className="menu-item">📍 Offer a Ride</a>
-          <a href="#" className="menu-item">📋 My Trips</a>
-          <a href="#" className="menu-item">💬 Messages</a>
+          <Link to="/rider" className="menu-item active">Find a Ride</Link>
+          <Link to="/driver" className="menu-item">Offer a Ride</Link>
+          <a href="#" className="menu-item">My Trips</a>
+          <a href="#" className="menu-item">Messages</a>
           <div style={{ marginTop: '20px', borderTop: '1px solid #e1e4e8', paddingTop: '20px' }}>
-            <Link to="/login" className="menu-item">🔐 Login</Link>
-            <Link to="/signup" className="menu-item">👋 Sign Up</Link>
+            <Link to="/driver" className="menu-item">Driver Page</Link>
+            <Link to="/rider" className="menu-item">Rider Page</Link>
+            <Link to="/login" className="menu-item">Login</Link>
+            <Link to="/signup" className="menu-item">Sign Up</Link>
           </div>
         </nav>
 
@@ -71,9 +72,7 @@ function Home() {
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="main-content">
-        {/* Hero Section */}
         <section className="hero-section">
           <div className="hero-text">
             <h1>The smarter way<br />to move together.</h1>
@@ -84,49 +83,45 @@ function Home() {
           </div>
         </section>
 
-        {/* Search Section */}
         <section className="search-section">
           <form className="search-form" onSubmit={handleSearch}>
             <div className="search-row">
               <div className="search-input-group">
-                <label>📍 Pickup point</label>
+                <label>Pickup point</label>
                 <input
                   type="text"
                   placeholder="Enter pickup location"
                   value={pickup}
-                  onChange={(e) => setPickup(e.target.value)}
+                  onChange={(event) => setPickup(event.target.value)}
                 />
               </div>
               <div className="search-input-group">
-                <label>📍 Where to?</label>
+                <label>Where to?</label>
                 <input
                   type="text"
                   placeholder="Enter destination"
                   value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
+                  onChange={(event) => setDestination(event.target.value)}
                 />
               </div>
               <div className="search-input-group">
-                <label>📅 Today</label>
+                <label>Today</label>
                 <input type="date" />
               </div>
               <button type="submit" className="search-button">Search</button>
             </div>
           </form>
 
-          {/* Filters */}
           <div className="filters">
-            <button className="filter-btn">🔎 Filters</button>
+            <button className="filter-btn">Filters</button>
             <button className="filter-btn">Gender</button>
-            <button className="filter-btn">Timing ℹ️</button>
+            <button className="filter-btn">Timing</button>
             <button className="filter-btn">Proximity</button>
-            <button className="filter-btn eco">🌱 Eco-Friendly</button>
+            <button className="filter-btn eco">Eco-Friendly</button>
           </div>
         </section>
 
-        {/* Content Layout */}
         <div className="content-layout">
-          {/* Left Sidebar - Route Insight */}
           <aside className="left-sidebar">
             <div className="route-card">
               <h3>Live Route Insight</h3>
@@ -140,7 +135,6 @@ function Home() {
             </div>
           </aside>
 
-          {/* Rides List */}
           <section className="rides-section">
             {loading && <p className="loading">Loading rides...</p>}
 
@@ -171,7 +165,7 @@ function Home() {
 
                   <div className="ride-footer">
                     <div className="rating">
-                      <span className="stars">⭐ {ride.rating}</span>
+                      <span className="stars">★ {ride.rating}</span>
                       <span className="reviews">({ride.reviews})</span>
                       <span className="distance">• {ride.distance}</span>
                     </div>
