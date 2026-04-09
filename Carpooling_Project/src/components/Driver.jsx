@@ -1,19 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowLeft,
   Bell,
   CarFront,
   Check,
+  CheckCircle,
   CircleDot,
-  Clock3,
   Leaf,
   MapPinned,
-  MessageSquareText,
   ShieldCheck,
   Sparkles,
   Star,
-  UserRound,
+  XCircle,
+  Loader2,
 } from 'lucide-react';
 
 const sidebarItems = [
@@ -23,13 +23,84 @@ const sidebarItems = [
   { label: 'Messages', to: '/', active: false },
 ];
 
-const quickStats = [
-  { label: 'Route', value: 'Express lane' },
-  { label: 'Luggage', value: '2 cabin bags' },
-  { label: 'Rules', value: 'No smoking' },
-];
-
 function Driver() {
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [showForm, setShowForm] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [rideForm, setRideForm] = useState({ from: '', to: '', time: '', seats: 3 });
+
+  const user = JSON.parse(localStorage.getItem('user') || 'null') || { id: null, name: 'Krishna' };
+
+  useEffect(() => {
+    fetchRequests();
+  }, []);
+
+  const fetchRequests = async () => {
+    setLoading(true);
+    setErrorMsg('');
+    try {
+      const res = await fetch(`/api/driver/requests?driverName=${encodeURIComponent(user.name)}`);
+      if (!res.ok) throw new Error('Failed to fetch');
+      const data = await res.json();
+      setRequests(data);
+    } catch (err) {
+      setErrorMsg(err.message || 'Could not fetch ride requests');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAction = async (requestId, status) => {
+    try {
+      const res = await fetch(`/rides/request/${requestId}/${status}`, {
+        method: 'POST',
+      });
+      if (res.ok) {
+        setRequests(requests.map(r => r._id === requestId ? { ...r, status } : r));
+      } else {
+        const data = await res.json();
+        alert(data.message || 'Error updating status');
+      }
+    } catch (err) {
+      alert('Network error while updating status');
+    }
+  };
+
+  const handlePublishRide = async (e) => {
+    e.preventDefault();
+    if (!rideForm.from || !rideForm.to || !rideForm.time) {
+      alert('Please fill all fields');
+      return;
+    }
+    setPublishing(true);
+    try {
+      const res = await fetch('/addRide', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          driverName: user.name,
+          from: rideForm.from,
+          to: rideForm.to,
+          time: rideForm.time,
+          seats: Number(rideForm.seats),
+        }),
+      });
+      if (res.ok) {
+        setRideForm({ from: '', to: '', time: '', seats: 3 });
+        setShowForm(false);
+        alert('Ride published successfully!');
+      } else {
+        alert('Failed to publish ride');
+      }
+    } catch (err) {
+      alert('Network error publishing ride');
+    } finally {
+      setPublishing(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#eef3fb] px-3 py-4 text-slate-900 sm:px-5 lg:px-6">
       <div className="mx-auto max-w-[1400px]">
@@ -52,11 +123,11 @@ function Driver() {
               <div className="mt-8 rounded-[24px] bg-slate-950 px-4 py-4 text-white shadow-lg shadow-slate-900/15">
                 <div className="flex items-center gap-3">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 font-semibold text-slate-950">
-                    D
+                    {user.name?.[0]?.toUpperCase() || 'D'}
                   </div>
                   <div>
                     <p className="text-sm text-white/70">Welcome back</p>
-                    <p className="font-semibold">Driver Krishna</p>
+                    <p className="font-semibold">Driver {user.name}</p>
                   </div>
                 </div>
               </div>
@@ -108,7 +179,7 @@ function Driver() {
                   </button>
                   <div className="flex items-center gap-2 rounded-full bg-white px-2 py-1 shadow-sm ring-1 ring-slate-200">
                     <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 text-sm font-semibold text-white">
-                      K
+                      {user.name?.[0]?.toUpperCase() || 'K'}
                     </div>
                   </div>
                 </div>
@@ -116,50 +187,61 @@ function Driver() {
 
               <div className="mt-6 grid gap-6 xl:grid-cols-[1.18fr_0.82fr]">
                 <section className="space-y-5">
-                  <div className="rounded-[30px] bg-white p-4 shadow-[0_15px_40px_rgba(30,64,175,0.08)] ring-1 ring-slate-100">
-                    <div className="relative overflow-hidden rounded-[26px] bg-gradient-to-br from-slate-100 via-slate-50 to-cyan-50 p-6">
-                      <div className="absolute inset-0 opacity-50">
-                        <div className="h-full w-full bg-[linear-gradient(90deg,rgba(148,163,184,0.15)_1px,transparent_1px),linear-gradient(rgba(148,163,184,0.15)_1px,transparent_1px)] bg-[size:42px_42px]" />
-                      </div>
-                      <div className="relative h-[240px] rounded-[22px] border border-white/70 bg-white/40">
-                        <svg viewBox="0 0 520 280" className="h-full w-full">
-                          <path d="M42 218C96 199 111 142 159 136C213 128 236 39 289 44C338 49 353 144 415 154C448 159 473 128 492 99" fill="none" stroke="#1b72c9" strokeWidth="10" strokeLinecap="round" />
-                          <path d="M57 233C120 192 152 181 193 171C246 157 268 71 325 76C388 82 402 143 466 164" fill="none" stroke="#18a0aa" strokeWidth="8" strokeLinecap="round" strokeDasharray="12 12" />
-                          <path d="M166 126L210 80L279 87L329 45L395 124" fill="none" stroke="#62c56f" strokeWidth="7" strokeLinecap="round" />
-                        </svg>
-                        <div className="absolute bottom-4 left-4 inline-flex items-center gap-2 rounded-full bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-emerald-600/30">
-                          <Leaf className="h-4 w-4" />
-                          Eco-impact: 6.1kg CO2 saved
-                        </div>
-                      </div>
+                  <h2 className="text-xl font-semibold text-slate-900 border-b border-slate-200 pb-2">Rider Requests</h2>
+                  
+                  {loading && (
+                    <div className="flex items-center justify-center gap-2 p-10">
+                      <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+                      <span className="text-slate-500">Loading requests...</span>
                     </div>
+                  )}
+                  {errorMsg && <p className="text-red-500">{errorMsg}</p>}
+                  {!loading && !errorMsg && requests.length === 0 && (
+                     <div className="text-center p-10 bg-white rounded-[30px] shadow-sm ring-1 ring-slate-100">
+                       <CarFront className="h-12 w-12 mx-auto text-slate-300 mb-3" />
+                       <p className="text-xl font-semibold text-slate-700">No Requests Yet</p>
+                       <p className="text-sm text-slate-500 mt-2">Publish a ride below to start getting requests from riders.</p>
+                     </div>
+                  )}
 
-                    <div className="mt-5 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-                      <div>
-                        <p className="text-3xl font-semibold text-slate-900">Gurugram to Noida Sector 62</p>
-                        <p className="mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-500">
-                          <span className="inline-flex items-center gap-1">
-                            <Clock3 className="h-4 w-4 text-blue-600" />
-                            7:45 AM departure
-                          </span>
-                          <span>42 min duration</span>
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Earning / seat</p>
-                        <p className="mt-1 text-4xl font-semibold text-blue-700">₹185</p>
-                      </div>
-                    </div>
-
-                    <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                      {quickStats.map((item) => (
-                        <div key={item.label} className="rounded-[22px] bg-slate-50 px-4 py-4 ring-1 ring-slate-100">
-                          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">{item.label}</p>
-                          <p className="mt-2 font-medium text-slate-800">{item.value}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  {!loading && requests.map(req => (
+                     <div key={req._id} className="rounded-[30px] bg-white p-5 shadow-[0_15px_40px_rgba(30,64,175,0.08)] ring-1 ring-slate-100">
+                       <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                         <div className="flex items-center gap-4">
+                            <div className="flex h-14 w-14 items-center justify-center rounded-[22px] bg-gradient-to-br from-orange-400 to-cyan-500 text-lg font-semibold text-white">
+                              {req.riderId?.name?.[0]?.toUpperCase() || 'R'}
+                            </div>
+                            <div>
+                               <h3 className="text-lg font-semibold text-slate-900">{req.riderId?.name || 'Rider'}</h3>
+                               <p className="text-sm text-slate-500">{req.rideId?.from} → {req.rideId?.to}</p>
+                               <p className="text-xs text-slate-400 mt-1">Departure: {req.rideId?.time} • Seats left: {req.rideId?.seats}</p>
+                            </div>
+                         </div>
+                         <div className="mt-4 md:mt-0 flex gap-3 items-center">
+                            {req.status === 'pending' ? (
+                              <>
+                                <button 
+                                  onClick={() => handleAction(req._id, 'accepted')}
+                                  className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-200"
+                                >
+                                  <CheckCircle className="h-4 w-4" /> Accept
+                                </button>
+                                <button
+                                  onClick={() => handleAction(req._id, 'rejected')} 
+                                  className="inline-flex items-center gap-1 rounded-full bg-red-100 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-200"
+                                >
+                                  <XCircle className="h-4 w-4" /> Reject
+                                </button>
+                              </>
+                            ) : (
+                               <span className={`inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold ${req.status === 'accepted' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
+                                  {req.status === 'accepted' ? '✅ Accepted' : '❌ Rejected'}
+                               </span>
+                            )}
+                         </div>
+                       </div>
+                     </div>
+                  ))}
                 </section>
 
                 <aside className="space-y-5">
@@ -167,10 +249,10 @@ function Driver() {
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-center gap-4">
                         <div className="flex h-16 w-16 items-center justify-center rounded-[22px] bg-gradient-to-br from-cyan-500 to-blue-700 text-xl font-semibold text-white">
-                          K
+                          {user.name?.[0]?.toUpperCase() || 'K'}
                         </div>
                         <div>
-                          <h2 className="text-xl font-semibold text-slate-900">Krishna</h2>
+                          <h2 className="text-xl font-semibold text-slate-900">{user.name}</h2>
                           <p className="text-sm text-slate-500">Verified driver • Team commute lead</p>
                           <p className="mt-2 flex items-center gap-2 text-sm text-slate-500">
                             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-emerald-700">
@@ -179,7 +261,7 @@ function Driver() {
                             </span>
                             <span className="inline-flex items-center gap-1">
                               <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                              4.9 (142 rides)
+                              4.9
                             </span>
                           </p>
                         </div>
@@ -195,41 +277,83 @@ function Driver() {
                     </div>
                   </div>
 
-                  <div className="rounded-[28px] bg-white p-5 shadow-[0_15px_40px_rgba(30,64,175,0.08)] ring-1 ring-slate-100">
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <div className="rounded-[22px] bg-slate-50 px-4 py-4">
-                        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Vehicle</p>
-                        <p className="mt-2 font-medium text-slate-800">Tesla Model 3 • White</p>
-                      </div>
-                      <div className="rounded-[22px] bg-slate-50 px-4 py-4">
-                        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Seats open</p>
-                        <p className="mt-2 font-medium text-slate-800">4 of 5</p>
-                      </div>
-                    </div>
-                  </div>
-
                   <div className="rounded-[28px] bg-[#e9eff8] p-5 shadow-[0_15px_40px_rgba(30,64,175,0.08)] ring-1 ring-white/70">
-                    <h3 className="text-lg font-semibold text-slate-900">Publish this pool</h3>
-                    <p className="mt-1 text-sm text-slate-500">Share route details and invite riders to request seats.</p>
+                    <h3 className="text-lg font-semibold text-slate-900">Publish a New Ride</h3>
+                    <p className="mt-1 text-sm text-slate-500">Share your route to get rider requests.</p>
 
-                    <div className="mt-4 rounded-[20px] bg-white p-4 shadow-sm ring-1 ring-slate-100">
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Ride note</p>
-                      <p className="mt-3 text-sm leading-6 text-slate-500">
-                        Pickup starts at Cyber City metro. Riders should arrive 5 minutes early for a smooth departure.
-                      </p>
-                    </div>
-
-                    <label className="mt-4 flex items-start gap-3 text-sm text-slate-500">
-                      <input type="checkbox" defaultChecked className="mt-1 h-4 w-4 rounded border-slate-300 text-blue-700 focus:ring-blue-600" />
-                      I agree to the carpool community guidelines and verified passenger policy.
-                    </label>
-
-                    <button className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-700 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-700/25 transition hover:bg-blue-800">
-                      <Sparkles className="h-4 w-4" />
-                      Publish Ride Request
-                    </button>
-
-                    <p className="mt-3 text-center text-xs text-slate-500">Drivers usually get matching rider requests within 15 minutes.</p>
+                    {!showForm ? (
+                      <button 
+                        onClick={() => setShowForm(true)}
+                        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-700 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-700/25 transition hover:bg-blue-800"
+                      >
+                        <Sparkles className="h-4 w-4" />
+                        Create New Ride
+                      </button>
+                    ) : (
+                      <form onSubmit={handlePublishRide} className="mt-4 space-y-3">
+                        <div>
+                          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">From</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Gurugram"
+                            value={rideForm.from}
+                            onChange={(e) => setRideForm({ ...rideForm, from: e.target.value })}
+                            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">To</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Noida Sector 62"
+                            value={rideForm.to}
+                            onChange={(e) => setRideForm({ ...rideForm, to: e.target.value })}
+                            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Time</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. 8:00 AM"
+                            value={rideForm.time}
+                            onChange={(e) => setRideForm({ ...rideForm, time: e.target.value })}
+                            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Seats Available</label>
+                          <input
+                            type="number"
+                            min="1"
+                            max="10"
+                            value={rideForm.seats}
+                            onChange={(e) => setRideForm({ ...rideForm, seats: e.target.value })}
+                            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                          />
+                        </div>
+                        <div className="flex gap-2 pt-1">
+                          <button
+                            type="submit"
+                            disabled={publishing}
+                            className="flex-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-700/25 transition hover:bg-blue-800 disabled:opacity-50"
+                          >
+                            {publishing ? <><Loader2 className="h-4 w-4 animate-spin" /> Publishing...</> : <><Sparkles className="h-4 w-4" /> Publish Ride</>}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setShowForm(false)}
+                            className="rounded-2xl bg-slate-100 px-4 py-3 text-sm font-medium text-slate-600 transition hover:bg-slate-200"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </form>
+                    )}
                   </div>
                 </aside>
               </div>
