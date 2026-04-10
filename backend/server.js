@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
+const { MongoMemoryServer } = require('mongodb-memory-server');
 const Ride = require('./models/Ride');
 
 const app = express();
@@ -57,6 +58,30 @@ app.post('/addRide', async (req, res) => {
 });
 
 const RideRequest = require('./models/RideRequest');
+
+let memoryServer;
+
+async function connectToMongo() {
+  if (mongoUri) {
+    try {
+      await mongoose.connect(mongoUri, {
+        serverSelectionTimeoutMS: 10000,
+      });
+      return { uri: mongoUri, fallback: false };
+    } catch (error) {
+      console.warn('Atlas connection failed, starting a local in-memory MongoDB instead.');
+      console.warn(`Atlas error: ${error.message}`);
+    }
+  }
+
+  memoryServer = await MongoMemoryServer.create();
+  const memoryUri = memoryServer.getUri('carpooling');
+  await mongoose.connect(memoryUri, {
+    serverSelectionTimeoutMS: 10000,
+  });
+
+  return { uri: memoryUri, fallback: true };
+}
 
 app.get('/rides', async (req, res) => {
   try {
@@ -152,22 +177,19 @@ app.post('/rides/request/:id/:status', async (req, res) => {
 });
 
 async function startServer() {
-  if (!mongoUri) {
-    throw new Error('Missing MongoDB connection string. Set MONGO_URI in backend/.env.');
-  }
-
-  await mongoose.connect(mongoUri, {
-    serverSelectionTimeoutMS: 10000,
-  });
+  const connection = await connectToMongo();
 
   app.listen(port, () => {
     console.log(`Server started on port ${port}`);
     console.log(`MongoDB connected to ${mongoose.connection.name}`);
+    if (connection.fallback) {
+      console.log('Using local in-memory MongoDB for this session.');
+    }
   });
 }
 
 startServer().catch((error) => {
   console.error('Failed to start server:', error.message);
-  console.error('Atlas checklist: verify the URI, the database user/password, your current IP in Network Access, and the database name in the connection string.');
+  console.error('If you want to use Atlas, verify the URI, credentials, network access, and database name.');
   process.exit(1);
 });
