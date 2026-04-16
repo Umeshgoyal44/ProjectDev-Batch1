@@ -3,3 +3,8 @@ node_modules
 dist
 *.local
 .DS_Store
+__MACOSX/
+*.zip
+*.log
+backend/data/
+package-lock.json
